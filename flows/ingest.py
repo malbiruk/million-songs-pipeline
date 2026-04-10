@@ -13,8 +13,8 @@ GCS_BUCKET = os.environ["GCS_BUCKET"]
 
 SOURCES = [
     (
-        "http://labrosa.ee.columbia.edu/~dpwe/tmp/millionsongsubset.tar.gz",
-        "raw/millionsongsubset.tar.gz",
+        "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/AdditionalFiles/msd_summary_file.h5",
+        "raw/msd_summary_file.h5",
     ),
     (
         "https://www.tagtraum.com/genres/msd_tagtraum_cd2c.cls.zip",

@@ -13,9 +13,9 @@ Genres are often defined by cultural context, but do they have measurable audio 
 
 ## Datasets
 
-- [Million Song Dataset](http://millionsongdataset.com/) (1M tracks, 280 GB) — audio features and metadata (tempo, loudness, energy, danceability, key, year, etc.), HDF5 format
-- [MusixMatch](http://millionsongdataset.com/musixmatch) — bag-of-words lyrics for 237k tracks (top 5000 stemmed words), text / SQLite
-- [tagtraum genre annotations](http://www.tagtraum.com/msd_genre_datasets.html) — genre labels mapped to MSD tracks, text
+- [Million Song Dataset](http://millionsongdataset.com/) (1M tracks) — audio features and metadata (tempo, loudness, key, year, etc.) via the MSD summary file (300 MB HDF5)
+- [MusixMatch](http://millionsongdataset.com/musixmatch) — bag-of-words lyrics for 237k tracks (top 5000 stemmed words), SQLite
+- [tagtraum genre annotations](http://www.tagtraum.com/msd_genre_datasets.html) (CD2C) — genre labels for 191k tracks, text
 
 All datasets are joined on `track_id`.
 
@@ -23,27 +23,29 @@ All datasets are joined on `track_id`.
 
 ```mermaid
 graph TD
-    MSD[MSD - HDF5] --> ingest[PySpark ingest]
-    MXM[MusixMatch - text/SQLite] --> ingest
+    MSD[MSD summary - HDF5] --> ingest[Python ingest]
+    MXM[MusixMatch - SQLite] --> ingest
     TAG[tagtraum - text] --> ingest
-    ingest --> GCS[(GCS data lake)]
-    GCS --> BQ[(BigQuery DWH)]
+    ingest --> GCS[(GCS data lake — raw/)]
+    GCS --> transform[Python transform]
+    transform --> GCS2[(GCS data lake — processed/)]
+    GCS2 --> BQ[(BigQuery DWH)]
     BQ --> dbt[dbt transforms]
     dbt --> ST[Streamlit dashboard]
 
     Prefect -.orchestrates.-> ingest
-    Prefect -.orchestrates.-> GCS
+    Prefect -.orchestrates.-> transform
     Prefect -.orchestrates.-> BQ
     Prefect -.orchestrates.-> dbt
 ```
 
 ## Technologies
 
-- **Cloud**: Google Cloud Platform (GCS, BigQuery)
+- **Cloud**: Google Cloud Platform (GCS, BigQuery, Cloud Run)
 - **Infrastructure as Code**: Terraform
 - **Workflow orchestration**: Prefect
 - **Data warehouse**: BigQuery (partitioned by year, clustered by genre)
-- **Batch processing**: PySpark (HDF5 parsing and parquet conversion)
+- **Batch processing**: Python + Cloud Run (h5py + pyarrow for HDF5/SQLite → Parquet)
 - **Transformations**: dbt
 - **Dashboard**: Streamlit
 
