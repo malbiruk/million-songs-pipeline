@@ -1,0 +1,16 @@
+[project]
+name = "million-songs-pipeline"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "google-cloud-storage>=3.10.1",
+    "prefect==3.6.0",
+    "python-dotenv>=1.2.2",
+]
+
+[dependency-groups]
+dev = [
+    "h5py>=3.16.0",
+    "jupytext>=1.19.1",
+    "notebook>=7.5.5",
+]
