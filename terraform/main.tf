@@ -57,10 +57,11 @@ resource "google_dataproc_cluster" "spark_cluster" {
 
     software_config {
       image_version = "2.2-debian12"
+    }
 
-      override_properties = {
-        "dataproc:pip.packages" = "h5py==3.12.1"
-      }
+    initialization_action {
+      script      = "gs://million-songs-pipeline-data/scripts/init.sh"
+      timeout_sec = 300
     }
 
     # Auto-delete after 30 min idle to save money
