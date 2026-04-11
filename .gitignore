@@ -2,6 +2,7 @@
 .env
 .venv/
 __pycache__/
+.claude/
 
 # Terraform
 *.tfstate
@@ -24,3 +25,7 @@ __pycache__/
 dist/
 build/
 *.ipynb
+
+# dbt
+logs/
+target/

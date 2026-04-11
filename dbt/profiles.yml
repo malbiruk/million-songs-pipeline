@@ -1,0 +1,11 @@
+million_songs:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      project: million-songs-pipeline
+      dataset: million_songs
+      location: EU
+      threads: 4

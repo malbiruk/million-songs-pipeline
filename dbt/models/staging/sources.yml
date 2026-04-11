@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: million_songs
+    database: million-songs-pipeline
+    schema: million_songs
+    tables:
+      - name: tracks
+      - name: genres
+      - name: lyrics
