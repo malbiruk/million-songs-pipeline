@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import reverse_geocoder as rg
 import streamlit as st
 from dotenv import load_dotenv
+from google.api_core.exceptions import NotFound
 from google.cloud import bigquery
 from PIL.ImageColor import getrgb
 from tidepool import COLORWAY, set_plotly_template
@@ -29,30 +30,36 @@ def query_bq(sql: str):
     return client.query(sql).to_dataframe()
 
 
-features_by_year = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_audio_features_by_year ORDER BY year",
-)
-features_by_year_genre = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_audio_features_by_year_genre ORDER BY year, genre",
-)
-genre_fingerprints = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_genre_audio_fingerprints",
-)
-genre_location = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_genre_by_location",
-)
-top_words = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_top_words_by_genre WHERE word_rank <= 20",
-)
-lyrical_diversity = query_bq(
-    # sql
-    "SELECT * FROM million_songs.mrt_lyrical_diversity_by_genre",
-)
+try:
+    features_by_year = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_audio_features_by_year ORDER BY year",
+    )
+    features_by_year_genre = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_audio_features_by_year_genre ORDER BY year, genre",
+    )
+    genre_fingerprints = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_genre_audio_fingerprints",
+    )
+    genre_location = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_genre_by_location",
+    )
+    top_words = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_top_words_by_genre WHERE word_rank <= 20",
+    )
+    lyrical_diversity = query_bq(
+        # sql
+        "SELECT * FROM million_songs.mrt_lyrical_diversity_by_genre",
+    )
+except NotFound:
+    st.info(
+        "Waiting for pipeline to finish. Reload this page once the pipeline completes.",
+    )
+    st.stop()
 
 
 st.header("Audio Features Over Time")

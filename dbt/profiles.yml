@@ -5,7 +5,7 @@ million_songs:
       type: bigquery
       method: service-account
       keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
-      project: million-songs-pipeline
-      dataset: million_songs
-      location: EU
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: "{{ env_var('BQ_DATASET') }}"
+      location: "{{ env_var('LOCATION', 'EU') }}"
       threads: 4

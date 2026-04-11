@@ -3,6 +3,7 @@
 .venv/
 __pycache__/
 .claude/
+.keys/
 
 # Terraform
 *.tfstate

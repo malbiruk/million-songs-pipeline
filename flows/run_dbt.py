@@ -1,5 +1,6 @@
 """Run dbt transformations."""
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -15,7 +16,7 @@ DBT_DIR = str(Path(__file__).resolve().parent.parent / "dbt")
 def dbt_run() -> None:
     """Run dbt models."""
     result = subprocess.run(
-        ["dbt", "run", "--profiles-dir", "."],
+        [shutil.which("dbt") or "dbt", "run", "--profiles-dir", "."],
         cwd=DBT_DIR,
         capture_output=True,
         text=True,

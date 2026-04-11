@@ -9,3 +9,42 @@ services:
       PREFECT_SERVER_UI_SHOW_PROMOTIONAL_CONTENT: "false"
     security_opt:
       - label=disable
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:4200/api/health')",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pipeline:
+    build: .
+    image: million-songs-pipeline
+    command: python -m flows.pipeline
+    env_file: .env
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:${GOOGLE_APPLICATION_CREDENTIALS}:ro
+    depends_on:
+      prefect-server:
+        condition: service_healthy
+    security_opt:
+      - label=disable
+
+  dashboard:
+    image: million-songs-pipeline
+    command: streamlit run dashboard/app.py --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    env_file: .env
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:${GOOGLE_APPLICATION_CREDENTIALS}:ro
+    depends_on:
+      - pipeline
+    security_opt:
+      - label=disable

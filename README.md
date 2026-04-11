@@ -71,30 +71,24 @@ graph TD
 
 ### Prerequisites
 
-- [uv](https://docs.astral.sh/uv/)
+- [gcloud CLI](https://cloud.google.com/sdk/docs/install) (authenticated with `gcloud auth login`)
+- GCP project with billing enabled
 - Docker Compose (or Podman with podman-compose)
 - [Terraform](https://www.terraform.io/)
-- GCP account with a service account key (Storage Admin + BigQuery Admin roles)
 
 ### Setup
 
 ```bash
 git clone https://github.com/malbiruk/million-songs-pipeline.git
 cd million-songs-pipeline
-uv sync
-cp .env.example .env  # edit with your GCP project details
+./setup.sh  # creates GCP service account, .env, and provisions infrastructure
 ```
 
 ### Run
 
-> TODO: will be replaced with a single entrypoint script
-
 ```bash
-source .env
-cd terraform && terraform init && terraform apply && cd ..
-docker compose up -d
-uv run python -m flows.pipeline
-uv run streamlit run dashboard/app.py
+docker compose up
 ```
 
-Open http://localhost:8501.
+- http://localhost:4200 — Prefect UI (monitor pipeline execution)
+- http://localhost:8501 — Dashboard (available after pipeline completes)
