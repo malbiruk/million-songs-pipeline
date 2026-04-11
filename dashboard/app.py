@@ -1,4 +1,4 @@
-"""Million Songs — Genre & Audio Analysis Dashboard."""
+"""Million Songs: Genres, Lyrics & Trends — Dashboard."""
 
 import os
 from pathlib import Path
@@ -15,6 +15,7 @@ from PIL.ImageColor import getrgb
 from tidepool import COLORWAY, set_plotly_template
 
 COUNTRIES = pd.read_csv(Path(__file__).parent / "iso3_countries.csv")
+_iso_lookup = COUNTRIES.set_index("iso2")
 
 load_dotenv()
 set_plotly_template()
@@ -339,7 +340,6 @@ with col_diversity:
 
 
 st.header("Genre Map")
-_iso_lookup = COUNTRIES.set_index("iso2")
 
 
 @st.cache_data
