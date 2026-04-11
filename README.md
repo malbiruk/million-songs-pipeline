@@ -6,9 +6,9 @@
 
 Genres are often defined by cultural context, but do they have measurable audio and lyrical signatures? This project builds a batch data pipeline that joins three complementary datasets from the Million Song Dataset ecosystem into a unified analytical warehouse to explore:
 
-- Which audio features (tempo, loudness, energy) distinguish genres from each other
-- What words are most characteristic of each genre
 - How audio characteristics of popular music have shifted over the decades
+- Which audio features distinguish genres from each other
+- What words are most characteristic of each genre
 - Whether some genres are lyrically richer than others
 
 ## Datasets

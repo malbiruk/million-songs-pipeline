@@ -6,7 +6,8 @@ with raw_stats as (
         avg(t.tempo) as avg_tempo,
         avg(t.loudness) as avg_loudness,
         avg(t.duration) as avg_duration,
-        avg(t.song_hotttnesss) as avg_hotttnesss
+        avg(t.song_hotttnesss) as avg_hotttnesss,
+        avg(t.mode) as pct_major
     from {{ ref('stg_tracks') }} t
     inner join {{ ref('stg_genres') }} g using (track_id)
     group by g.genre
@@ -32,6 +33,7 @@ select
     (r.avg_tempo - b.min_tempo) / nullif(b.max_tempo - b.min_tempo, 0) as norm_tempo,
     (r.avg_loudness - b.min_loud) / nullif(b.max_loud - b.min_loud, 0) as norm_loudness,
     (r.avg_duration - b.min_dur) / nullif(b.max_dur - b.min_dur, 0) as norm_duration,
-    (r.avg_hotttnesss - b.min_hot) / nullif(b.max_hot - b.min_hot, 0) as norm_hotttnesss
+    (r.avg_hotttnesss - b.min_hot) / nullif(b.max_hot - b.min_hot, 0) as norm_hotttnesss,
+    r.pct_major as norm_pct_major
 from raw_stats r
 cross join bounds b

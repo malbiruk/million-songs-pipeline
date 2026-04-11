@@ -10,6 +10,10 @@ dependencies = [
     "pyarrow>=23.0.1",
     "python-dotenv>=1.2.2",
     "google-cloud-bigquery>=3.41.0",
+    "plotly>=6.7.0",
+    "tidepool-theme>=0.2.0",
+    "streamlit>=1.56.0",
+    "reverse-geocoder>=1.5.1",
 ]
 
 [dependency-groups]

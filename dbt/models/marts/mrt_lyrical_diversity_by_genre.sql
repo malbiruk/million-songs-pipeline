@@ -1,4 +1,4 @@
--- Lyrical diversity metrics per genre with stddev for CI
+-- Lyrical diversity metrics per genre
 with track_stats as (
     select
         l.track_id,
@@ -14,10 +14,7 @@ select
     genre,
     count(*) as track_count,
     avg(vocab_size) as avg_vocab_size,
-    stddev(vocab_size) as std_vocab_size,
     avg(total_words) as avg_total_words,
-    stddev(total_words) as std_total_words,
-    avg(vocab_size / nullif(total_words, 0)) as avg_type_token_ratio,
-    stddev(vocab_size / nullif(total_words, 0)) as std_type_token_ratio
+    avg(vocab_size / nullif(total_words, 0)) as avg_type_token_ratio
 from track_stats
 group by genre

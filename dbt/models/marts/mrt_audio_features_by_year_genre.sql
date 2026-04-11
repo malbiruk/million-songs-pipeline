@@ -1,21 +1,24 @@
--- Average audio features per year with stddev for CI and min-max normalized values
-with yearly as (
+-- Average audio features per year per genre with stddev for CI
+-- Also includes mode (% major), key distribution, time_signature
+with yearly_genre as (
     select
-        year,
+        t.year,
+        g.genre,
         count(*) as track_count,
-        avg(tempo) as avg_tempo,
-        stddev(tempo) as std_tempo,
-        avg(loudness) as avg_loudness,
-        stddev(loudness) as std_loudness,
-        avg(duration) as avg_duration,
-        stddev(duration) as std_duration,
-        avg(song_hotttnesss) as avg_hotttnesss,
-        stddev(song_hotttnesss) as std_hotttnesss,
-        avg(mode) as pct_major,
-        stddev(mode) as std_mode
-    from {{ ref('stg_tracks') }}
-    where year is not null
-    group by year
+        avg(t.tempo) as avg_tempo,
+        stddev(t.tempo) as std_tempo,
+        avg(t.loudness) as avg_loudness,
+        stddev(t.loudness) as std_loudness,
+        avg(t.duration) as avg_duration,
+        stddev(t.duration) as std_duration,
+        avg(t.song_hotttnesss) as avg_hotttnesss,
+        stddev(t.song_hotttnesss) as std_hotttnesss,
+        avg(t.mode) as pct_major,
+        stddev(t.mode) as std_mode
+    from {{ ref('stg_tracks') }} t
+    inner join {{ ref('stg_genres') }} g using (track_id)
+    where t.year is not null
+    group by t.year, g.genre
 ),
 
 bounds as (
@@ -24,7 +27,7 @@ bounds as (
         min(avg_loudness) as min_loud, max(avg_loudness) as max_loud,
         min(avg_duration) as min_dur, max(avg_duration) as max_dur,
         min(avg_hotttnesss) as min_hot, max(avg_hotttnesss) as max_hot
-    from yearly
+    from yearly_genre
 )
 
 select
@@ -37,6 +40,6 @@ select
     y.std_duration / nullif(b.max_dur - b.min_dur, 0) as norm_std_duration,
     (y.avg_hotttnesss - b.min_hot) / nullif(b.max_hot - b.min_hot, 0) as norm_hotttnesss,
     y.std_hotttnesss / nullif(b.max_hot - b.min_hot, 0) as norm_std_hotttnesss
-from yearly y
+from yearly_genre y
 cross join bounds b
-order by y.year
+order by y.year, y.genre
