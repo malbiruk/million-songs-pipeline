@@ -4,13 +4,15 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
     "google-cloud-storage>=3.10.1",
+    "h5py>=3.16.0",
+    "griffe<1.15",
     "prefect==3.6.0",
+    "pyarrow>=23.0.1",
     "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]
 dev = [
-    "h5py>=3.16.0",
     "jupytext>=1.19.1",
     "notebook>=7.5.5",
 ]
