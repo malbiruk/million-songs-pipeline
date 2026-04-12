@@ -307,21 +307,30 @@ with col_diversity:
             "genre": ["All"],
             "track_count": [lyrical_diversity["track_count"].sum()],
             "avg_vocab_size": [
-                (lyrical_diversity["avg_vocab_size"] * lyrical_diversity["track_count"]).sum()
+                (
+                    lyrical_diversity["avg_vocab_size"]
+                    * lyrical_diversity["track_count"]
+                ).sum()
                 / lyrical_diversity["track_count"].sum(),
             ],
             "avg_total_words": [
-                (lyrical_diversity["avg_total_words"] * lyrical_diversity["track_count"]).sum()
+                (
+                    lyrical_diversity["avg_total_words"]
+                    * lyrical_diversity["track_count"]
+                ).sum()
                 / lyrical_diversity["track_count"].sum(),
             ],
             "avg_type_token_ratio": [
-                (lyrical_diversity["avg_type_token_ratio"] * lyrical_diversity["track_count"]).sum()
+                (
+                    lyrical_diversity["avg_type_token_ratio"]
+                    * lyrical_diversity["track_count"]
+                ).sum()
                 / lyrical_diversity["track_count"].sum(),
             ],
         },
     )
     df_div = pd.concat(
-        [lyrical_diversity.sort_values(metric, ascending=True), all_row],
+        [all_row, lyrical_diversity.sort_values(metric, ascending=False)],
         ignore_index=True,
     )
 
@@ -365,10 +374,14 @@ genre_loc = add_countries(genre_location)
 map_genre = st.selectbox("Genre", ["All", *genre_list], key="map_genre")
 
 if map_genre == "All":
-    country_genre = genre_loc.groupby(["country", "genre"])["artist_count"].sum().reset_index()
+    country_genre = (
+        genre_loc.groupby(["country", "genre"])["artist_count"].sum().reset_index()
+    )
     idx = country_genre.groupby("country")["artist_count"].idxmax()
     dominant = country_genre.loc[idx].copy()
-    totals = genre_loc.groupby("country")["artist_count"].sum().reset_index(name="total")
+    totals = (
+        genre_loc.groupby("country")["artist_count"].sum().reset_index(name="total")
+    )
     dominant = dominant.merge(totals, on="country")
     dominant["norm_total"] = dominant["total"] / dominant["total"].max()
     names = genre_loc[["country", "country_name"]].drop_duplicates()
@@ -395,13 +408,19 @@ if map_genre == "All":
 else:
     genre_data = genre_loc[genre_loc["genre"] == map_genre]
     genre_counts = (
-        genre_data.groupby("country")["artist_count"].sum().reset_index(name="genre_artists")
+        genre_data.groupby("country")["artist_count"]
+        .sum()
+        .reset_index(name="genre_artists")
     )
     total_counts = (
-        genre_loc.groupby("country")["artist_count"].sum().reset_index(name="total_artists")
+        genre_loc.groupby("country")["artist_count"]
+        .sum()
+        .reset_index(name="total_artists")
     )
     country_counts = genre_counts.merge(total_counts, on="country")
-    country_counts["pct"] = country_counts["genre_artists"] / country_counts["total_artists"] * 100
+    country_counts["pct"] = (
+        country_counts["genre_artists"] / country_counts["total_artists"] * 100
+    )
     names = genre_loc[["country", "country_name"]].drop_duplicates()
     country_counts = country_counts.merge(names, on="country")
 
