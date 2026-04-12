@@ -22,6 +22,11 @@ echo "=== Million Songs Pipeline — Cleanup ==="
 echo "Project: $GCP_PROJECT_ID"
 echo ""
 
+# --- Local docker-compose stack ---
+echo "Stopping docker-compose stack (if running)..."
+docker compose down || true
+echo ""
+
 # --- Terraform-managed resources ---
 echo "Destroying terraform-managed resources..."
 cd terraform
