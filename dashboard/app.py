@@ -320,9 +320,9 @@ with col_diversity:
             ],
         },
     )
-    df_div = pd.concat([lyrical_diversity, all_row], ignore_index=True).sort_values(
-        metric,
-        ascending=True,
+    df_div = pd.concat(
+        [lyrical_diversity.sort_values(metric, ascending=True), all_row],
+        ignore_index=True,
     )
 
     fig_div = px.bar(
@@ -330,6 +330,7 @@ with col_diversity:
         y="genre",
         x=metric,
         orientation="h",
+        category_orders={"genre": df_div["genre"].tolist()},
     )
     fig_div.update_layout(
         margin={"r": 20, "t": 20, "b": 50},
