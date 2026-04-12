@@ -24,18 +24,20 @@ All datasets are joined on `track_id`.
 
 ```mermaid
 graph TD
-    MSD[MSD summary - HDF5] --> ingest
-    MXM[MusixMatch - SQLite] --> ingest
-    TAG[tagtraum - text] --> ingest
+    MSD[MSD summary - HDF5]
+    MXM[MusixMatch - SQLite]
+    TAG[tagtraum - text]
 
     subgraph Cloud
-        ingest[flows/ingest.py] --> GCS[(GCS data lake — raw/)]
-        GCS --> transform[flows/transform.py]
-        transform --> GCS2[(GCS data lake — processed/)]
-        GCS2 --> load[flows/load_bq.py]
-        load --> BQ[(BigQuery DWH)]
-        BQ --> dbt[flows/run_dbt.py]
-        dbt --> BQ
+        GCS[(GCS data lake — raw/)]
+        GCS2[(GCS data lake — processed/)]
+        load[flows/load_bq.py]
+        BQ[(BigQuery DWH)]
+        dbt[flows/run_dbt.py]
+        subgraph CR[Cloud Run Jobs]
+            ingest[jobs/ingest.py]
+            transform[jobs/transform.py]
+        end
     end
 
     subgraph Local
@@ -43,6 +45,16 @@ graph TD
         ST[Streamlit dashboard]
     end
 
+    MSD --> ingest
+    MXM --> ingest
+    TAG --> ingest
+    ingest --> GCS
+    GCS --> transform
+    transform --> GCS2
+    GCS2 --> load
+    load --> BQ
+    BQ --> dbt
+    dbt --> BQ
     BQ --> ST
 
     Prefect -.orchestrates.-> ingest
@@ -51,9 +63,11 @@ graph TD
     Prefect -.orchestrates.-> dbt
 ```
 
+Prefect orchestrates locally while compute runs on GCP: ingest and transform as Cloud Run Jobs, load_bq and dbt as API calls to BigQuery. A multi-stage Dockerfile produces two images — a `jobs` image with worker dependencies for Cloud Run, and a `local` image with orchestrator and dashboard dependencies for docker compose.
+
 ## Technologies
 
-- **Cloud**: Google Cloud Platform (GCS, BigQuery)
+- **Cloud**: Google Cloud Platform (GCS, BigQuery, Cloud Run Jobs, Artifact Registry, Cloud Build)
 - **Infrastructure as Code**: Terraform
 - **Workflow orchestration**: Prefect
 - **Data warehouse**: BigQuery (tracks partitioned by year, tables clustered by genre/artist/word)
@@ -82,22 +96,27 @@ graph TD
 
 - [gcloud CLI](https://cloud.google.com/sdk/docs/install) (authenticated with `gcloud auth login`)
 - GCP project with billing enabled
-- Docker Compose (or Podman with podman-compose)
+- Docker Compose
 - [Terraform](https://www.terraform.io/)
 
-### Setup
+### Setup and Run
 
 ```bash
 git clone https://github.com/malbiruk/million-songs-pipeline.git
 cd million-songs-pipeline
-./setup.sh  # creates GCP service account, .env, and provisions infrastructure
-```
-
-### Run
-
-```bash
-docker compose up
+./setup.sh         # creates GCP service account, .env, provisions infrastructure
+docker compose up  # starts Prefect, runs the pipeline, starts the dashboard
 ```
 
 - http://localhost:4200 — Prefect UI (monitor pipeline execution)
 - http://localhost:8501 — Dashboard (available after pipeline completes)
+
+End-to-end (`setup.sh` through to a populated dashboard) takes roughly 10 minutes on a fresh GCP project.
+
+### Teardown
+
+```bash
+./cleanup.sh
+```
+
+Stops the local containers, destroys all terraform-managed GCP resources, deletes the pipeline service account, and removes local state (`.keys/`, terraform state files).
