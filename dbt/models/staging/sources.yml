@@ -6,5 +6,25 @@ sources:
     schema: "{{ env_var('BQ_DATASET') }}"
     tables:
       - name: tracks
+        columns:
+          - name: track_id
+            tests:
+              - not_null
+              - unique
       - name: genres
+        columns:
+          - name: track_id
+            tests:
+              - not_null
+              - unique
+          - name: genre
+            tests:
+              - not_null
       - name: lyrics
+        columns:
+          - name: track_id
+            tests:
+              - not_null
+          - name: word
+            tests:
+              - not_null

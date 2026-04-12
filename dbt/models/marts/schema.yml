@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: mrt_audio_features_by_year
+    description: Yearly averages + stddev of audio features, normalized 0-1.
+    columns:
+      - name: year
+        tests:
+          - not_null
+          - unique
+      - name: track_count
+        tests:
+          - not_null
+
+  - name: mrt_audio_features_by_year_genre
+    description: Yearly averages per genre. Key is (year, genre).
+    columns:
+      - name: year
+        tests:
+          - not_null
+      - name: genre
+        tests:
+          - not_null
+      - name: track_count
+        tests:
+          - not_null
+
+  - name: mrt_genre_audio_fingerprints
+    description: One row per genre with normalized audio features for the radar chart.
+    columns:
+      - name: genre
+        tests:
+          - not_null
+          - unique
+      - name: track_count
+        tests:
+          - not_null
+
+  - name: mrt_top_words_by_genre
+    description: Top words per genre ranked by total count, stop words filtered.
+    columns:
+      - name: genre
+        tests:
+          - not_null
+      - name: word
+        tests:
+          - not_null
+      - name: total_count
+        tests:
+          - not_null
+      - name: word_rank
+        tests:
+          - not_null
+
+  - name: mrt_lyrical_diversity_by_genre
+    description: Vocabulary richness metrics per genre.
+    columns:
+      - name: genre
+        tests:
+          - not_null
+          - unique
+      - name: track_count
+        tests:
+          - not_null
+      - name: avg_vocab_size
+        tests:
+          - not_null
+      - name: avg_total_words
+        tests:
+          - not_null
+      - name: avg_type_token_ratio
+        tests:
+          - not_null
+
+  - name: mrt_genre_by_location
+    description: Aggregated artist counts by rounded lat/lon and genre.
+    columns:
+      - name: lat
+        tests:
+          - not_null
+      - name: lon
+        tests:
+          - not_null
+      - name: genre
+        tests:
+          - not_null
+      - name: artist_count
+        tests:
+          - not_null

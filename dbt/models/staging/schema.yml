@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_tracks
+    description: Cleaned track metadata with one row per track.
+    columns:
+      - name: track_id
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_genres
+    description: One primary genre per track.
+    columns:
+      - name: track_id
+        tests:
+          - not_null
+          - unique
+      - name: genre
+        tests:
+          - not_null
+
+  - name: stg_lyrics
+    description: Bag-of-words lyric counts; one row per track_id + word.
+    columns:
+      - name: track_id
+        tests:
+          - not_null
+      - name: word
+        tests:
+          - not_null

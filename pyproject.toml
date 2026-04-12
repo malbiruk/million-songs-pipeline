@@ -27,4 +27,6 @@ local = [
 dev = [
     "jupytext>=1.19.1",
     "notebook>=7.5.5",
+    "pytest>=8",
+    "ruff>=0.7",
 ]
