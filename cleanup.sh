@@ -16,6 +16,10 @@ fi
 # shellcheck disable=SC1091
 source .env
 
+# Use the caller's gcloud auth for terraform destroy — the SA only has
+# artifactregistry.writer, which can't delete the AR repo.
+unset GOOGLE_APPLICATION_CREDENTIALS
+
 SA_EMAIL="million-songs-pipeline@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
 
 echo "=== Million Songs Pipeline — Cleanup ==="
