@@ -1,0 +1,14 @@
+# Cloud Build config for the lean `jobs` image that runs inside Cloud Run Jobs.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target
+      - jobs
+      - -t
+      - ${_IMAGE}
+      - .
+images:
+  - ${_IMAGE}
+options:
+  logging: CLOUD_LOGGING_ONLY

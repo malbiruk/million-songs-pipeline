@@ -22,7 +22,9 @@ services:
       retries: 10
 
   pipeline:
-    build: .
+    build:
+      context: .
+      target: local
     image: million-songs-pipeline
     command: python -m flows.pipeline
     env_file: .env

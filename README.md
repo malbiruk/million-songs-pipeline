@@ -24,17 +24,26 @@ All datasets are joined on `track_id`.
 
 ```mermaid
 graph TD
-    MSD[MSD summary - HDF5] --> ingest[flows/ingest.py]
+    MSD[MSD summary - HDF5] --> ingest
     MXM[MusixMatch - SQLite] --> ingest
     TAG[tagtraum - text] --> ingest
-    ingest --> GCS[(GCS data lake — raw/)]
-    GCS --> transform[flows/transform.py]
-    transform --> GCS2[(GCS data lake — processed/)]
-    GCS2 --> load[flows/load_bq.py]
-    load --> BQ[(BigQuery DWH)]
-    BQ --> dbt[flows/run_dbt.py]
-    dbt --> BQ
-    BQ --> ST[Streamlit dashboard]
+
+    subgraph Cloud
+        ingest[flows/ingest.py] --> GCS[(GCS data lake — raw/)]
+        GCS --> transform[flows/transform.py]
+        transform --> GCS2[(GCS data lake — processed/)]
+        GCS2 --> load[flows/load_bq.py]
+        load --> BQ[(BigQuery DWH)]
+        BQ --> dbt[flows/run_dbt.py]
+        dbt --> BQ
+    end
+
+    subgraph Local
+        Prefect
+        ST[Streamlit dashboard]
+    end
+
+    BQ --> ST
 
     Prefect -.orchestrates.-> ingest
     Prefect -.orchestrates.-> transform
