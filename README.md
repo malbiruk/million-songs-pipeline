@@ -90,6 +90,8 @@ Prefect orchestrates locally while compute runs on GCP: ingest and transform as 
 4. **Lyrical diversity by genre** — vocabulary richness, unique words, total words per song
 5. **Genre map** — choropleth: dominant genre per country or genre prevalence as % of artists
 
+*styled with [tidepool-theme](https://github.com/malbiruk/tidepool-theme)*
+
 ## How to Reproduce
 
 ### Prerequisites
